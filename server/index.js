@@ -1,69 +1,45 @@
 const proxy = require('express-http-proxy');
 var express  = require('express');
 var app  = express();
-//var httpProxy = require('http-proxy');
-//var apiProxy = httpProxy.createProxyServer();
-app.use(express.static(__dirname + '/../'));
 
-const port = 5000;
-var serverOne = 'http://ec2-52-90-9-19.compute-1.amazonaws.com/',
+app.use('/:id', express.static(__dirname + '/../'));
+
+const port = 3000;
+var serverOne = 'http://52.90.9.19/',
     ServerTwo = 'http://18.191.38.179/',
-    ServerThree = 'http://13.52.99.182:1337',
+    ServerThree = 'http://13.57.181.95:1337/',
     ServerFour = ''
- 
-// app.all("/photos", function(req, res) {
-//     console.log('redirecting to Server1 Photos');
-//     apiProxy.web(req, res, {target: serverOne});
-// });
 
-// app.all("/header", function(req, res) {
-//     console.log('redirecting to Server2 Header');
-//     apiProxy.web(req, res, {target: ServerTwo});
-// });
-
-// app.all("/reviews", function(req, res) {
-//     console.log('redirecting to Server3');
-//     apiProxy.web(req, res, {target: ServerThree});
-// });
-
-// app.all("/reservations", function(req, res) {
-//     console.log('redirecting to Server2');
-//     apiProxy.web(req, res, {target: ServerFour});
-// });
-
-// app.use('/header', proxy(ServerTwo));
-// app.use('/photos', proxy(serverOne));
-// app.use('/reviews', proxy(ServerThree));
-
-
-app.use('/header', proxy(ServerTwo, {
+app.use('/:id/header', proxy(ServerTwo, {
     proxyReqPathResolver: req => {
-      if(req.url === '/bundle.js') {
-        return req.url;
-      } else {
-        return '/header' + req.url
+        console.log('Grab Header')
+        let url = req.url;
+        if (url !== '/bundle.js'){
+          url = '/header';
+        }
+        return `/${req.params.id}${url}`;
       }
-    }
-  }));;
-app.use('/reviews', proxy(ServerThree, {
+  }));
+app.use('/:id/reviews', proxy(ServerThree , {
     proxyReqPathResolver: req => {
-      if(req.url === '/dist/bundle.js') {
-        return req.url;
-      } else {
-        return '/reviews' + req.url
+        console.log('Grab Reviews')
+        let url = req.url;
+        if (url !== '/dist/bundle.js'){
+          url = '/reviews';
+        }
+        return `/${req.params.id}${url}`;
       }
+  }));
+  app.use('/:id/photos', proxy(serverOne, {
+      proxyReqPathResolver: (req) => {
+          console.log('Grab Photos')
+          let url = req.url;
+      if (url !== '/main.js'){
+        url = '/photos';
+      }
+      return `/${req.params.id}${url}`;
     }
   }));
-app.use('/photos', proxy(serverOne, {
-    proxyReqPathResolver: req => {
-      if(req.url === '/main.js') {
-        return req.url;
-      } else {
-        return '/photos' + req.url
-      }
-    }
-  }));
-  ;
 
 app.get('/', (req, res)=>{
     res.end();
@@ -73,6 +49,3 @@ app.listen(port, function(){
 })
 
 module.exports = app;
-//reviews 3003
-//reservations 3004
-
