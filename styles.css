@@ -15,4 +15,18 @@
     flex-direction : row;
     justify-content: center;
     margin-right : 300px;   
-    }
+}
+#header{
+    z-index: 0;
+    position: relative;
+    top: 0;
+    left: 0;
+}
+#photos{
+    width: 660px;
+    z-index: 2;
+    position: absolute;
+    right: 360px;
+    bottom: 225px;
+}
+ 
